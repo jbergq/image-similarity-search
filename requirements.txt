@@ -1,0 +1,13 @@
+numpy
+hydra-core
+pymilvus
+pymongo
+python-dotenv
+opencv-python
+torch
+torchvision
+transformers
+uvicorn
+fastapi
+pydantic
+python-multipart
