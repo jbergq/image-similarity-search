@@ -19,7 +19,7 @@ class ModelHF(nn.Module):
         self.model = AutoModel.from_pretrained(model_ckpt)
         self.hidden_dim = self.model.config.hidden_size
 
-    def setupt(self, *args, **kwargs):
+    def setup(self, *args, **kwargs):
         pass
 
     def extract_embeddings(self, batch):
