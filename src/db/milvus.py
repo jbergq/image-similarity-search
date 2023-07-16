@@ -1,10 +1,4 @@
-from pymilvus import (
-    connections,
-    FieldSchema,
-    CollectionSchema,
-    DataType,
-    Collection,
-)
+from pymilvus import Collection, CollectionSchema, DataType, FieldSchema, connections
 
 
 def get_milvus_collection(collection_name, emb_dim):

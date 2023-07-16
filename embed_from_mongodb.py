@@ -6,10 +6,10 @@ import os
 import random
 
 import cv2
-import pymongo
-import hydra
 import dotenv
+import hydra
 import numpy as np
+import pymongo
 
 from src.db.milvus import get_milvus_collection
 from src.db.mongodb import get_objects
