@@ -93,9 +93,9 @@ def main(cfg):
                 ]
             )
 
-        milv_coll.flush()
-        if i % 100 == 0:
-            print(f"################## Processed {i} objects. ##################")
+        if i % cfg.flush_freq == 0:
+            milv_coll.flush()
+            print(f"################## Processed {i + 1} objects. ##################")
 
 
 if __name__ == "__main__":
