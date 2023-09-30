@@ -45,6 +45,8 @@ def main(cfg):
     if cfg.limit_samples:
         objects = objects[: cfg.limit_samples]
 
+    print(f"Processing {len(objects)} objects.")
+
     # Load frames and compute embeddings.
     for i, obj in enumerate(objects):
         print(f"Processing object {obj.name}.")
