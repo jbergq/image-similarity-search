@@ -26,3 +26,32 @@ def get_milvus_collection(collection_name, emb_dim):
     milv_coll = Collection(collection_name, schema, consistency_level="Strong")
 
     return milv_coll
+
+
+# Define the Milvus search function
+def search_milvus(
+    emb: list, milv_coll: Collection, top_k: int = 5, metric_type: str = "IP"
+):
+    # Get embeddings from Milvus.
+    milv_coll.create_index(
+        "embeddings",
+        {
+            "index_type": "IVF_FLAT",
+            "metric_type": metric_type,
+            "params": {"nlist": 128},
+        },
+    )
+    milv_coll.load()
+
+    search_params = {
+        "metric_type": metric_type,
+        "params": {"nprobe": 32},
+    }
+
+    result = milv_coll.search(
+        emb, "embeddings", search_params, limit=top_k, output_fields=["object_id"]
+    )
+
+    return result
+
+    return obj_ids, dists
