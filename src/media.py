@@ -6,6 +6,7 @@ from ext.video_utils.video_utils import load_recording_frames
 class Media:
     def __init__(self, source_path) -> None:
         self.source_path = source_path
+        self._limit_frame_count = None
 
     def start(self):
         pass
@@ -22,6 +23,7 @@ class Media:
         for frame in load_recording_frames(
             self.source_path,
             frame_interval=self.frame_interval(),
+            limit_frame_count=self._limit_frame_count,
             start_time=self.start(),
             end_time=self.end(),
         ):
@@ -31,6 +33,8 @@ class Media:
                 yield frames
                 frames = []
 
+        yield frames
+
 
 class Frame(Media):
     pass
@@ -38,13 +42,20 @@ class Frame(Media):
 
 class Clip(Media):
     def __init__(
-        self, source_path, start_time, end_time, frame_interval=50, video_id=None
+        self,
+        source_path,
+        start_time,
+        end_time,
+        frame_interval=50,
+        limit_frame_count=None,
+        video_id=None,
     ) -> None:
         super().__init__(source_path)
 
         self.start_time = start_time
         self.end_time = end_time
         self._frame_interval = frame_interval
+        self._limit_frame_count = limit_frame_count
         self._video_id = video_id
 
     def start(self):
@@ -65,10 +76,13 @@ class Clip(Media):
 
 
 class Video(Media):
-    def __init__(self, source_path, frame_interval=50, video_id=None) -> None:
+    def __init__(
+        self, source_path, frame_interval=50, limit_frame_count=None, video_id=None
+    ) -> None:
         super().__init__(source_path)
 
         self._frame_interval = frame_interval
+        self._limit_frame_count = limit_frame_count
         self._video_id = video_id
 
     def start(self):

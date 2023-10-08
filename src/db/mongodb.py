@@ -1,7 +1,5 @@
 import hydra
 
-from src.job import ClipJob, VideoJob
-
 
 def get_objects(db, jobs):
     """Get objects from database."""

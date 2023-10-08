@@ -30,9 +30,11 @@ class VideoJob(QueryJob):
         search_params,
         only_not_embedded=False,
         frame_interval=50,
+        limit_frame_count=None,
     ) -> None:
         super().__init__(search_params, only_not_embedded)
         self._frame_interval = frame_interval
+        self._limit_frame_count = limit_frame_count
 
     def get_objects(self, db):
         videos = db.videos.find(self.search_params)
@@ -40,6 +42,7 @@ class VideoJob(QueryJob):
             media.Video(
                 source_path=video["path"],
                 frame_interval=self._frame_interval,
+                limit_frame_count=self._limit_frame_count,
                 video_id=video["_id"],
             )
             for video in videos
@@ -79,6 +82,7 @@ class ClipJob(QueryJob):
                 start_time=clip["start"],
                 end_time=clip["end"],
                 frame_interval=self._frame_interval,
+                limit_frame_count=None,
                 video_id=clip["video"][0]["_id"],
             )
             for clip in clips
