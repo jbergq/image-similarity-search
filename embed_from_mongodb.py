@@ -52,6 +52,9 @@ def main(cfg):
         print(f"Processing object {obj.name}.")
 
         for frames in obj.get_iter(chunk_size=25):
+            if len(frames) == 0:
+                continue
+
             images = [frame["frame"] for frame in frames]
             images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
             images = np.array(images)
