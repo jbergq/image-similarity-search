@@ -40,6 +40,20 @@ def main(cfg):
 
     # Get objects from database.
     objects = get_objects(db, cfg.jobs)
+
+    if cfg.only_not_embedded:
+        # Check which objects are already embedded.
+        emb_objs = db.embeddings.find(
+            {
+                "video": {"$in": [obj.video_id() for obj in objects]},
+                "model_name": model.name,
+            }
+        )
+        emb_obj_ids = set([emb_obj["video"] for emb_obj in emb_objs])
+
+        # Filter out embedded objects.
+        objects = [obj for obj in objects if obj.video_id() not in emb_obj_ids]
+
     random.shuffle(objects)
 
     if cfg.limit_samples:
