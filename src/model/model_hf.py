@@ -17,7 +17,6 @@ class ModelHF(nn.Module):
         self.model_ckpt = model_ckpt
         self.extractor = AutoFeatureExtractor.from_pretrained(model_ckpt)
         self.model = AutoModel.from_pretrained(model_ckpt)
-        self.hidden_dim = self.model.config.hidden_size
 
     def setup(self, *args, **kwargs):
         pass
@@ -45,4 +44,23 @@ class ModelHF(nn.Module):
 
     @property
     def embedding_dim(self):
-        return self.hidden_dim
+        return self.model.config.hidden_size
+
+
+class CLIPModel(ModelHF):
+    @property
+    def embedding_dim(self):
+        return self.model.config.vision_config.projection_dim
+
+    def extract_embeddings(self, batch):
+        """Utility to compute embeddings."""
+
+        images = batch["image"]
+        image_batch_transformed = torch.tensor(images).to(device)
+        inputs = self.extractor(images=image_batch_transformed, return_tensors="pt")
+
+        with torch.no_grad():
+            embeddings = self.model.get_image_features(**inputs).cpu()
+            # Normalize embeddings.
+            embeddings /= embeddings.norm(dim=-1, keepdim=True)
+        return {"embeddings": embeddings}
