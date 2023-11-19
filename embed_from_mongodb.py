@@ -13,6 +13,7 @@ import pymongo
 
 from src.db.milvus import get_milvus_collection
 from src.db.mongodb import get_objects
+from src.db.utils import validate_integrity
 
 dotenv.load_dotenv()
 
@@ -65,6 +66,21 @@ def main(cfg):
     for i, obj in enumerate(objects):
         print(f"Processing object {obj.name}.")
 
+        is_valid = validate_integrity(db, milv_coll, obj)
+        if is_valid:
+            continue
+
+        # Remove any existing db entries and Milvus embeddings.
+        db_frames = list(db["frames"].find({"video": obj.video_id()}))
+        db_embs = list(
+            db["embeddings"].find({"frame": {"$in": [r["_id"] for r in db_frames]}})
+        )
+
+        db["frames"].delete_many({"_id": {"$in": [r["_id"] for r in db_frames]}})
+        db["embeddings"].delete_many({"_id": {"$in": [r["_id"] for r in db_embs]}})
+        milv_coll.delete(expr=f"id in [{','.join([r['milvus_id'] for r in db_embs])}]")
+
+        # Start extracting and inserting embeddings.
         for frames in obj.get_iter(chunk_size=25):
             if len(frames) == 0:
                 continue

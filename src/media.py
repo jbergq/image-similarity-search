@@ -1,6 +1,10 @@
 from bson.objectid import ObjectId
 
-from ext.video_utils.video_utils import load_recording_frames
+from ext.video_utils.video_utils import (
+    load_recording_frames,
+    get_recording_duration,
+    get_recording_length,
+)
 
 
 class Media:
@@ -16,6 +20,9 @@ class Media:
 
     def frame_interval(self):
         pass
+
+    def __len__(self):
+        return get_recording_length(self.source_path)
 
     def get_iter(self, chunk_size=100):
         frames = []
