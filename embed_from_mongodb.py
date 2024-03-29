@@ -91,6 +91,12 @@ def main(cfg):
             images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
             images = np.array(images)
 
+            out = model.extract_embeddings({"image": images})
+            embs = out["embeddings"]
+
+            if len(embs) == 0:
+                continue
+
             # Insert frame timestamps in database.
             frame_objs = db["frames"].insert_many(
                 [
@@ -102,9 +108,6 @@ def main(cfg):
                 ]
             )
             frame_ids = frame_objs.inserted_ids
-
-            out = model.extract_embeddings({"image": images})
-            embs = out["embeddings"]
 
             # Insert embeddings in Milvus and MongoDB databases.
             emb_objs = milv_coll.insert(
