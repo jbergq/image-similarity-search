@@ -67,7 +67,9 @@ def main(cfg):
         print(f"Processing object {obj.name}.")
 
         is_valid = validate_integrity(db, milv_coll, obj)
+
         if is_valid:
+            # Object has already been processed. Skip.
             continue
 
         # Remove any existing db entries and Milvus embeddings.
@@ -89,7 +91,7 @@ def main(cfg):
             images = [cv2.cvtColor(image, cv2.COLOR_BGR2RGB) for image in images]
             images = np.array(images)
 
-            # Insert frame timestamp to database
+            # Insert frame timestamps in database.
             frame_objs = db["frames"].insert_many(
                 [
                     {
@@ -104,6 +106,7 @@ def main(cfg):
             out = model.extract_embeddings({"image": images})
             embs = out["embeddings"]
 
+            # Insert embeddings in Milvus and MongoDB databases.
             emb_objs = milv_coll.insert(
                 [
                     {

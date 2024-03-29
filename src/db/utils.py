@@ -7,7 +7,7 @@ def validate_integrity(db, milv_coll, obj):
 
     # Check if no frames found in database.
     if not len(db_frames) > 0:
-        print("Error: Found 0 database frames")
+        print("Found 0 database frames for object.")
         return False
 
     total_frames = len(obj)
